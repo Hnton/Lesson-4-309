@@ -1,7 +1,24 @@
 extern crate rand;
 use rand::Rng;
+mod algorithm;
 
+#[derive(Debug)]
+pub struct Page {
+    number: i64,
+    pub reference: bool
+}
 
+impl Page {
+    pub fn new(ref_number: i64) -> Page {
+        Page {
+            number: ref_number,
+            reference: false
+        }
+    }
+    fn update_ref(&mut self){
+        self.reference = true;
+    }
+}
 fn main() {
 
     // Buffer size (Manually change for now to get 3, 5, 10)
@@ -13,7 +30,7 @@ fn main() {
     // Creating Vec of 100 numbers
     let mut numbers = Vec::<i64>::with_capacity(100);
     
-    // Pushing 100 random numbers from 0 - 20 into Vec
+    // Pushing 100 random numbers from 0 - 19 into Vec
     for _ in 0..100 {
         numbers.push(random_number.gen_range(0,20));
     }
@@ -54,4 +71,15 @@ fn main() {
 
     println!("Changed buffer: {:#?}", buffer_clone);
 
+    let mut p = Page::new(numbers_clone[0]);
+    print!("{:#?}", p);
+    p.update_ref();
+    print!("{:#?}", p);
+
+
 }
+
+// pub fn fifo()
+// {
+
+// }
