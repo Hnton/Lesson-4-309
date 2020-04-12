@@ -2,7 +2,8 @@ extern crate rand;
 use rand::Rng;
 use std::clone::Clone;
 use std::collections::VecDeque;
-const BUFFER_SIZE: usize = 3; 
+use std::fmt;
+const BUFFER_SIZE: usize = 3;     // Buffer size (Manually change for now to get 3, 5, 10)
 
 
 
@@ -30,11 +31,23 @@ impl PartialEq for Page {
     }
 }
 
+impl fmt::Display for Page{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Number:{}     |      Reference:{}", self.number, self.reference)
+    }
+}
+
 #[derive(Debug)]
 pub struct Report {
     pub hits: i64,
     pub removes: i64,
     pub faults: i64
+}
+
+impl fmt::Display for Report{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Hits:{} | Faults:{} | Removes:{}", self.hits, self.faults, self.removes)
+    }
 }
 
 impl Report{
@@ -58,10 +71,6 @@ impl Report{
 
 
 fn main() {
-
-    // Buffer size (Manually change for now to get 3, 5, 10)
-    let buffer_size = 3;
-
     // Random number generator
     let mut random_number = rand::thread_rng();
 
@@ -72,60 +81,8 @@ fn main() {
     for _ in 0..100 {
         ref_string.push(Page::new(random_number.gen_range(0,20)));
     }
-
-    // Cloning numbers
-    let mut numbers_clone = ref_string.clone();
-
-    // Creating buffer
-    let mut buffer = Vec::<i64>::with_capacity(buffer_size);
-
     // Prints original 100 numbers
-    println!("Original: {:#?}", ref_string);
-
-    // // Pushes buffer_size from 100 numbers into buffer
-    // for i in 0..buffer_size {
-    //     buffer.push(numbers_clone[i]);
-    // }
-
-    // // Creates buffer clone
-    // let mut buffer_clone = buffer.clone();
-
-    // // Removes buffer_size from 100 numbers
-    // for n in 0..buffer_size {
-    //     numbers_clone.remove(0);
-    // }
-
-    // // Prints buffer at start
-    // println!("buffer {:#?}", buffer_clone);
-
-    // // REPLACE IN BUFFER
-
-    // // Removes index 0 from buffer 
-    // buffer_clone.remove(0);
-    // // Inserts index 0 from 100 numbers into index 0 from buffer
-    // buffer_clone.insert(0, numbers_clone[0]);
-    // // Removes index 0 from 100 numbers
-    // numbers_clone.remove(0);
-
-    // println!("Changed buffer: {:#?}", buffer_clone);
-
-    // let mut p = Page::new(numbers_clone[0]);
-    // print!("{:#?}", p);
-    // p.update_ref();
-    // print!("{:#?}", p);
-    // let mut r = Report::new();
-    // print!("{:#?}", r);
-    // let i = 10;
-    // r.update_faults(i);
-    // print!("{:#?}", r);
-    // let t = 2;
-    // r.update_hits(t);
-    // print!("{:#?}", r);
-    // let f = 33;
-    // r.update_removes(f);
-    // print!("{:#?}", r);
-    // r.update_removes(0);
-    // print!("{:#?}", r);
+    println!("Original: {:?}", ref_string);
     let mut fifo_ref_string = ref_string.clone();
     fifo(fifo_ref_string);
 
@@ -138,8 +95,8 @@ pub fn fifo(mut ref_str: Vec<Page>)
     let mut fifo_report = Report::new();
     let mut frame_buffer: VecDeque<Page> = VecDeque::with_capacity(BUFFER_SIZE);
     for i in ref_str.iter_mut() {
-        println!("frame: {:#?}", frame_buffer);
-        println!("Hits:{}, Faults:{}, Removes:{}", fifo_report.hits, fifo_report.faults, fifo_report.removes);
+        println!("\n\n{}", fifo_report);
+        println!("\n{:?}", frame_buffer);
         if frame_buffer.contains(&i){
             i.update_ref();
             fifo_report.update_hits();
@@ -153,11 +110,9 @@ pub fn fifo(mut ref_str: Vec<Page>)
             fifo_report.update_faults();
         }
     }
-    println!("Hits:{}, Faults:{}, Misses:{}", fifo_report.hits, fifo_report.faults, fifo_report.removes);
+    println!("\n{}", fifo_report);
 
-    println!("final: {:#?}", frame_buffer);
-    println!("size: {}", ref_str.len());
-}
+    println!("{:?}", frame_buffer);}
 
 pub fn nru()
 {
