@@ -94,8 +94,8 @@ fn main() {
 
     // fifo(fifo_ref_string);
     // second_chance(scndchance_ref_string);
-    lru(lru_ref_string);
-    // nru(nru_ref_string);
+    // lru(lru_ref_string);
+    nru(nru_ref_string);
     // clock(clock_ref_string);
 
 
@@ -128,11 +128,39 @@ pub fn fifo(mut ref_str: Vec<Page>)
     println!("\n{}", fifo_report);
 }
 
-pub fn nru()
+pub fn nru(mut ref_str: Vec<Page>)
 {
 
     println!("NRU Algorithm");
 
+    let mut nru_report = Report::new();
+    let mut frame_buffer: VecDeque<Page> = VecDeque::with_capacity(BUFFER_SIZE);
+    for i in ref_str.iter_mut() {
+        println!("\n\n{}", nru_report);
+        println!("\n{:?}", frame_buffer);
+        if frame_buffer.contains(&i){
+            nru_report.update_hits();
+
+            let x = frame_buffer.iter().position(|r| r.number == i.number).unwrap();
+            frame_buffer[x].update_ref();
+        }
+        else if frame_buffer.len() != BUFFER_SIZE {
+            frame_buffer.push_front(*i);
+            nru_report.update_faults();
+        }
+        else if frame_buffer[BUFFER_SIZE - 1].reference == false {
+            frame_buffer.rotate_right(BUFFER_SIZE - 1);
+        }
+        else {
+            frame_buffer.pop_back();
+            frame_buffer.push_front(*i);
+            nru_report.update_faults();
+            nru_report.update_removes();
+        }
+
+
+
+    }
 
 }
 
