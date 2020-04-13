@@ -3,6 +3,8 @@ use rand::Rng;
 use std::clone::Clone;
 use std::collections::VecDeque;
 use std::fmt;
+use std::time::{Instant};
+
 const BUFFER_SIZE: usize = 3;     // Buffer size (Manually change for now to get 3, 5, 10)
 
 
@@ -85,22 +87,54 @@ fn main() {
         ref_string.push(Page::new(random_number.gen_range(0,20)));
     }
     // Prints original 100 numbers
-    println!("Original: {:?}", ref_string);
-    let mut fifo_ref_string = ref_string.clone();
-    let mut scndchance_ref_string = ref_string.clone();
-    let mut lru_ref_string = ref_string.clone();
-    let mut nru_ref_string = ref_string.clone();
-    let mut clock_ref_string = ref_string.clone();
+    //println!("Original: {:?}", ref_string);
+    let _fifo_ref_string = ref_string.clone();
+    let _scndchance_ref_string = ref_string.clone();
+    let _lru_ref_string = ref_string.clone();
+    let _nru_ref_string = ref_string.clone();
+    let _clock_ref_string = ref_string.clone();
 
-    // fifo(fifo_ref_string);
-    // second_chance(scndchance_ref_string);
-    // lru(lru_ref_string);
-    nru(nru_ref_string);
-    // clock(clock_ref_string);
+    let fifo_start = Instant::now();
+    fifo(_fifo_ref_string);
+    let fifo_duration = fifo_start.elapsed();
 
+    let second_start = Instant::now();
+    second_chance(_scndchance_ref_string);
+    let second_duration = second_start.elapsed();
+
+    let lru_start = Instant::now();
+    lru(_lru_ref_string);
+    let lru_duration = lru_start.elapsed();
+    
+    let nru_start = Instant::now();
+    lru(_nru_ref_string);
+    let nru_duration = nru_start.elapsed();
+
+    let clock_start = Instant::now();
+    lru(_clock_ref_string);
+    let clock_duration = clock_start.elapsed();
+
+    println!("\n\nFIFO -          Time elapsed: {:?} ", fifo_duration );
+    println!("SECOND CHANCE - Time elapsed: {:?} ", second_duration );
+    println!("LRU -           Time elapsed: {:?} ", lru_duration );
+    println!("NRU -           Time elapsed: {:?} ", nru_duration );
+    println!("CLOCK -         Time elapsed: {:?} ", clock_duration );
+
+    let mut time = Vec::new();
+
+    time.push(fifo_duration);
+    time.push(second_duration);
+    time.push(lru_duration);
+    time.push(nru_duration);
+    time.push(clock_duration);
+    time.sort();
+
+    println!("\nTime Sorted: {:?}\n\n", time);
+ 
 
 
 }
+
 
 pub fn fifo(mut ref_str: Vec<Page>)
 {

@@ -1,1 +1,1 @@
-C:\Users\Mikae\OneDrive\Documents\GitHub\Lesson-4-309\memoryPage\target\debug\memoryPage.exe: C:\Users\Mikae\OneDrive\Documents\GitHub\Lesson-4-309\memoryPage\src\main.rs
+C:\Users\Mikae\OneDrive\Documents\GitHub\Lesson-4-309\memorypage\target\debug\memoryPage.exe: C:\Users\Mikae\OneDrive\Documents\GitHub\Lesson-4-309\memorypage\src\main.rs
