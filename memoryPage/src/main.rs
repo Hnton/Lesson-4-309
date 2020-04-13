@@ -10,7 +10,7 @@ const BUFFER_SIZE: usize = 3;     // Buffer size (Manually change for now to get
 #[derive(Copy, Clone, Debug)]
 pub struct Page {
     pub number: i64,
-    pub reference: bool
+    pub reference: bool,
 }
 
 impl Page {
@@ -94,9 +94,9 @@ fn main() {
 
     // fifo(fifo_ref_string);
     // second_chance(scndchance_ref_string);
-    // lru(lru_ref_string);
+    lru(lru_ref_string);
     // nru(nru_ref_string);
-    clock(clock_ref_string);
+    // clock(clock_ref_string);
 
 
 
@@ -150,6 +150,9 @@ pub fn lru(mut ref_str: Vec<Page>)
 
         if frame_buffer.contains(&i) {
             lru_report.update_hits();
+           
+            let x = frame_buffer.iter().position(|r| r.number == i.number).unwrap();
+            frame_buffer[x].update_ref();
 
         }
         else if frame_buffer.len() != BUFFER_SIZE {
@@ -157,12 +160,15 @@ pub fn lru(mut ref_str: Vec<Page>)
             lru_report.update_faults();
         }
         else {
-            println!("IWIEdwe");
-            
+            frame_buffer.rotate_left(BUFFER_SIZE - 1);
+            frame_buffer.pop_back();
+            frame_buffer.push_front(*i);
+            lru_report.update_removes();
+            lru_report.update_faults();
+        }
+
             // replace lowest index after "hit" page number with new page number
             // update remove()
-            
-        }
     }
 
 }
