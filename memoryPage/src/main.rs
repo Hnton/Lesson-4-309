@@ -139,24 +139,30 @@ pub fn nru(mut ref_str: Vec<Page>)
         println!("\n\n{}", nru_report);
         println!("\n{:?}", frame_buffer);
         if frame_buffer.contains(&i){
-            nru_report.update_hits();
-
+            nru_report.update_hits();    
+            
             let x = frame_buffer.iter().position(|r| r.number == i.number).unwrap();
-            frame_buffer[x].update_ref();
+            frame_buffer[x].update_ref_f();
         }
         else if frame_buffer.len() != BUFFER_SIZE {
             frame_buffer.push_front(*i);
             nru_report.update_faults();
+
+            let x = frame_buffer.iter().position(|r| r.number == i.number).unwrap();
+            frame_buffer[x].update_ref();
         }
-        else if frame_buffer[BUFFER_SIZE - 1].reference == false {
-            frame_buffer.rotate_right(BUFFER_SIZE - 1);
-        }
-        else {
+        else if frame_buffer[BUFFER_SIZE - 1].reference == false  {
+            println!("ROTATE");
+            frame_buffer.rotate_left(BUFFER_SIZE - 1);  
             frame_buffer.pop_back();
-            frame_buffer.push_front(*i);
             nru_report.update_faults();
             nru_report.update_removes();
+            frame_buffer.push_front(*i);
         }
+        else if frame_buffer[BUFFER_SIZE - 1].reference == true {
+            frame_buffer.rotate_left(BUFFER_SIZE - 1);
+        }
+
 
 
 
