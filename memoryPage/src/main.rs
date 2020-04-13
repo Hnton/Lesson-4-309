@@ -107,11 +107,11 @@ fn main() {
     let lru_duration = lru_start.elapsed();
     
     let nru_start = Instant::now();
-    lru(_nru_ref_string);
+    nru(_nru_ref_string);
     let nru_duration = nru_start.elapsed();
 
     let clock_start = Instant::now();
-    lru(_clock_ref_string);
+    clock(_clock_ref_string);
     let clock_duration = clock_start.elapsed();
 
     println!("\n\nFIFO -          Time elapsed: {:?} ", fifo_duration );
@@ -130,8 +130,6 @@ fn main() {
     time.sort();
 
     println!("\nTime Sorted: {:?}\n\n", time);
- 
-
 
 }
 
@@ -162,6 +160,14 @@ pub fn fifo(mut ref_str: Vec<Page>)
     println!("\n{}", fifo_report);
 }
 
+// Select one of the pages that has not been used recently
+// Reference bit
+//      true = Been used recently
+//      false = Hasnt been used recently
+// If the buffer contains the # then updates the hit and puts ref to true
+// If buffer is not full then add # to buffer then update the ref to true
+// If last ref in buffer is false, pop back then push # to front then update fault and removes
+// If last ref in buffer is true, rotate the last # from the back to the front
 pub fn nru(mut ref_str: Vec<Page>)
 {
 
@@ -183,27 +189,27 @@ pub fn nru(mut ref_str: Vec<Page>)
             nru_report.update_faults();
 
             let x = frame_buffer.iter().position(|r| r.number == i.number).unwrap();
-            frame_buffer[x].update_ref();
         }
         else if frame_buffer[BUFFER_SIZE - 1].reference == false  {
-            println!("ROTATE");
-            frame_buffer.rotate_left(BUFFER_SIZE - 1);  
             frame_buffer.pop_back();
+            frame_buffer.push_front(*i);
             nru_report.update_faults();
             nru_report.update_removes();
-            frame_buffer.push_front(*i);
+            
         }
         else if frame_buffer[BUFFER_SIZE - 1].reference == true {
             frame_buffer.rotate_left(BUFFER_SIZE - 1);
         }
-
-
-
-
     }
 
 }
 
+// If fram buffer contains # then update hit, and update ref to true
+// If buffer isnt full add another # to buffer and update faults
+// Rotate last # in buffer to front
+// Pop last off of buffer
+// Push new # onto front
+// Update removes and faults
 pub fn lru(mut ref_str: Vec<Page>)
 {
 
